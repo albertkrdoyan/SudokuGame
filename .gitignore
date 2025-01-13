@@ -1,0 +1,15 @@
+
+*.user
+*.targets
+*.props
+*.bin
+*.v2
+*.vsidx
+Sudokuuuuu/.vs/Sudokuuuuu/v17/.suo
+*.json
+*.pdb
+*.dll
+*.resources
+*.cache
+*.editorconfig
+*.BuildWithSkipAnalyzers

@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SudokuUwUu
@@ -20,7 +14,7 @@ namespace SudokuUwUu
 
             cells = new Label[9, 9];
 
-            int st_x = 125, st_y = 65, size = 50;
+            int st_x = 70, st_y = 65, size = 60;
             int st_x_fixed = st_x;
 
             menu_button = new Button()
@@ -30,7 +24,8 @@ namespace SudokuUwUu
                 Text = "<- MENU",
                 Font = new Font("Segoe UI Black", 15F, FontStyle.Bold),
                 BackColor = SystemColors.ControlLightLight,
-                TextAlign = ContentAlignment.MiddleCenter
+                TextAlign = ContentAlignment.MiddleCenter,
+                ForeColor = play_button.ForeColor
             };
             menu_button.Click += MenuScreeLoad;
 
@@ -67,6 +62,42 @@ namespace SudokuUwUu
                 st_x = st_x_fixed;
                 st_y += size + ((i + 1) % 3 == 0 ? 3 : 0);
             }
+
+            mode_button = new Label()
+            {
+                Font = menu_button.Font,
+                Size = menu_button.Size,
+                BackColor = menu_button.BackColor,
+                ForeColor = menu_button.ForeColor,
+                Location = new Point(cells[0, 3].Location.X + size / 2, menu_button.Location.Y),
+                Text = "Mode: Final",
+                TextAlign = ContentAlignment.MiddleCenter,
+                BorderStyle = BorderStyle.FixedSingle
+            };
+            mode_button.Click += new EventHandler(mode_change_click);
+            is_edit_mode = false;
+
+            this.Controls.Add(mode_button);
+            this.Controls.Add(background);
+            this.Controls.Add(menu_button);
+            mode_button.Visible = false;
+            background.Visible = false;
+            menu_button.Visible = false;
+        }
+
+        private void mode_change_click(object sender, EventArgs e)
+        {
+            if (is_edit_mode)
+            {
+                mode_button.Text = "Mode: Final";
+                is_edit_mode = false;
+            }
+            else
+            {
+                mode_button.Text = "Mode: Edit";
+                is_edit_mode = true;
+            }
+            this.Focus();
         }
 
         private void CellClick(object sender, EventArgs e)
@@ -78,8 +109,6 @@ namespace SudokuUwUu
                 active_cell = cell;
 
                 cell.BackColor = Color.LightBlue;
-
-                //MessageBox.Show(cell.Name);
             }
         }
 
@@ -104,8 +133,9 @@ namespace SudokuUwUu
                 active_cell = null;
             }
 
-            this.Controls.Remove(background);
-            this.Controls.Remove(menu_button);
+            mode_button.Visible = false;
+            background.Visible = false;
+            menu_button.Visible = false;
 
             for (int i = 0; i < 9; ++i)
             {
@@ -118,7 +148,7 @@ namespace SudokuUwUu
             this.Height = 460;
             this.Width = 640;
 
-            this.DesktopLocation = new Point(this.Location.X + 60, this.Location.Y + 30);
+            this.DesktopLocation = new Point(this.Location.X + 120, this.Location.Y + 90);
         }
 
         private void play_button_Click(object sender, EventArgs e)
@@ -136,9 +166,12 @@ namespace SudokuUwUu
             about_button.Visible = false;
 
             is_play_screen = true;
+            is_edit_mode = false;
+            mode_button.Text = "Mode: Final";
 
-            this.Controls.Add(background);
-            this.Controls.Add(menu_button);
+            mode_button.Visible = true;
+            background.Visible = true;
+            menu_button.Visible = true;
 
             for (int i = 0; i < 9; ++i)
             {
@@ -148,9 +181,9 @@ namespace SudokuUwUu
                 }
             }
 
-            this.Height = 600;
-            this.Width = 700;
-            this.DesktopLocation = new Point(this.Location.X - 60, this.Location.Y - 30);
+            this.Height = 670;
+            this.Width = 750;
+            this.DesktopLocation = new Point(this.Location.X - 120, this.Location.Y - 90);
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -160,12 +193,57 @@ namespace SudokuUwUu
             {
                 if (n > '0' && n <= '9')
                 {
-                    active_cell.Text = n.ToString();
+                    if (!is_edit_mode)
+                    {
+                        if (active_cell != null)
+                            active_cell.Font = new Font("Sanserif", 28F, FontStyle.Regular);
+                        active_cell.Text = n.ToString();
+                    }
+                    else
+                    {
+                        if (active_cell != null)
+                            active_cell.Font = new Font("Sanserif", 12F, FontStyle.Regular);
+                        active_cell.Text = MakeEditableCell(n - '0');
+                    }
                 }
                 else if (n == 'c' || n == 'C')
                     active_cell.Text = "";
             }
             e.SuppressKeyPress = true;
+        }
+
+        private string MakeEditableCell(int pressed_num)
+        {
+            string res = active_cell.Text;
+
+            bool[] nums = new bool[9];
+
+            if (res.Length > 1)
+            {
+                for (int i = 0; i < res.Length; i++)
+                {
+                    if (res[i] > '0' && res[i] <= '9')
+                        nums[res[i] - '0' - 1] = true;
+                }
+            }
+
+            nums[pressed_num - 1] = !nums[pressed_num - 1];
+
+            res = "";
+            for (int i = 0; i < 9; ++i)
+            {
+                if (nums[i])
+                    res += (i + 1).ToString();
+                else
+                    res += "  ";
+                                
+                if ((i + 1) % 3 == 0)
+                    res += "\n";
+                else
+                    res += "  ";
+            }
+
+            return res;
         }
     }
 }

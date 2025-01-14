@@ -135,11 +135,13 @@ namespace SudokuUwUu
 
         private Label[,] cells;
         private Label background;
+        private Label active_cell;
         private Button menu_button;
+        private Label mode_button;
 
         private bool is_play_screen;
-        private Label active_cell;
-        private int active_x, active_y;
+        private bool is_edit_mode;
+        private int active_x, active_y;        
     }
 }
 

@@ -20,12 +20,13 @@ namespace SudokuUwUu
 
             cells = new Label[9, 9];
 
-            int st_x = 125, st_y = 65, size = 35;
+            int st_x = 125, st_y = 65, size = 50;
+            int st_x_fixed = st_x;
 
             menu_button = new Button()
             {
                 Location = new Point(10, 10),
-                Size = new Size(175, 50),
+                Size = new Size(150, 40),
                 Text = "<- MENU",
                 Font = new Font("Segoe UI Black", 15F, FontStyle.Bold),
                 BackColor = SystemColors.ControlLightLight,
@@ -48,10 +49,10 @@ namespace SudokuUwUu
                     {
                         Name = "CELL " + i.ToString() + " " + j.ToString(),
                         TabIndex = i * 9 + j,
-                        Location = new Point(st_x + (j * size) + (j % 3 == 0 ? 5 : 0), st_y + (i * size) + (i % 3 == 0 ? 5 : 0)),
+                        Location = new Point(st_x, st_y),
                         Size = new Size(size, size),
                         TextAlign = ContentAlignment.MiddleCenter,
-                        Font = new Font("Sanserif", 15F, FontStyle.Regular),
+                        Font = new Font("Sanserif", 28F, FontStyle.Regular),
                         BorderStyle = BorderStyle.FixedSingle,
                         Text = "",
                         BackColor = Color.White,
@@ -60,7 +61,11 @@ namespace SudokuUwUu
                     this.Controls.Add(cells[i, j]);
                     cells[i, j].BringToFront();
                     cells[i, j].Visible = false;
+
+                    st_x += size + ((j + 1) % 3 == 0 ? 3 : 0);
                 }
+                st_x = st_x_fixed;
+                st_y += size + ((i + 1) % 3 == 0 ? 3 : 0);
             }
         }
 
@@ -101,6 +106,7 @@ namespace SudokuUwUu
 
             this.Controls.Remove(background);
             this.Controls.Remove(menu_button);
+
             for (int i = 0; i < 9; ++i)
             {
                 for (int j = 0; j < 9; ++j)
@@ -108,6 +114,11 @@ namespace SudokuUwUu
                     cells[i, j].Visible = false;
                 }
             }
+
+            this.Height = 460;
+            this.Width = 640;
+
+            this.DesktopLocation = new Point(this.Location.X + 60, this.Location.Y + 30);
         }
 
         private void play_button_Click(object sender, EventArgs e)
@@ -128,6 +139,7 @@ namespace SudokuUwUu
 
             this.Controls.Add(background);
             this.Controls.Add(menu_button);
+
             for (int i = 0; i < 9; ++i)
             {
                 for (int j = 0; j < 9; ++j)
@@ -135,6 +147,10 @@ namespace SudokuUwUu
                     cells[i, j].Visible = true;
                 }
             }
+
+            this.Height = 600;
+            this.Width = 700;
+            this.DesktopLocation = new Point(this.Location.X - 60, this.Location.Y - 30);
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)

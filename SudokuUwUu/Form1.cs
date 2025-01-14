@@ -1,6 +1,14 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
 using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
-namespace Sudokuuuuu
+namespace SudokuUwUu
 {
     public partial class Form1 : Form
     {
@@ -12,7 +20,7 @@ namespace Sudokuuuuu
 
             cells = new Label[9, 9];
 
-            int st_x = 135, st_y = 65, size = 50;
+            int st_x = 125, st_y = 65, size = 35;
 
             menu_button = new Button()
             {
@@ -43,17 +51,20 @@ namespace Sudokuuuuu
                         Location = new Point(st_x + (j * size) + (j % 3 == 0 ? 5 : 0), st_y + (i * size) + (i % 3 == 0 ? 5 : 0)),
                         Size = new Size(size, size),
                         TextAlign = ContentAlignment.MiddleCenter,
-                        Font = new Font("Sanserif", 18F, FontStyle.Regular),
+                        Font = new Font("Sanserif", 15F, FontStyle.Regular),
                         BorderStyle = BorderStyle.FixedSingle,
                         Text = "",
                         BackColor = Color.White,
                     };
                     cells[i, j].Click += CellClick;
+                    this.Controls.Add(cells[i, j]);
+                    cells[i, j].BringToFront();
+                    cells[i, j].Visible = false;
                 }
             }
         }
 
-        private void CellClick(object? sender, EventArgs e)
+        private void CellClick(object sender, EventArgs e)
         {
             if (sender is Label cell)
             {
@@ -67,7 +78,7 @@ namespace Sudokuuuuu
             }
         }
 
-        private void MenuScreeLoad(object? sender, EventArgs e)
+        private void MenuScreeLoad(object sender, EventArgs e)
         {
             title_label.Enabled = true;
             play_button.Enabled = true;
@@ -94,7 +105,7 @@ namespace Sudokuuuuu
             {
                 for (int j = 0; j < 9; ++j)
                 {
-                    this.Controls.Remove(cells[i, j]);
+                    cells[i, j].Visible = false;
                 }
             }
         }
@@ -121,8 +132,7 @@ namespace Sudokuuuuu
             {
                 for (int j = 0; j < 9; ++j)
                 {
-                    this.Controls.Add(cells[i, j]);
-                    cells[i, j].BringToFront();
+                    cells[i, j].Visible = true;
                 }
             }
         }

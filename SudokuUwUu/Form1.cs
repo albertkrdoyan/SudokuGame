@@ -10,6 +10,11 @@ namespace SudokuUwUu
         {
             InitializeComponent();
 
+            Load1();
+        }
+
+        private void Load1()
+        {
             is_play_screen = false;
 
             cells = new Label[9, 9];
@@ -51,9 +56,9 @@ namespace SudokuUwUu
                         BorderStyle = BorderStyle.FixedSingle,
                         Text = "",
                         BackColor = Color.White,
-                    };
-                    cells[i, j].Click += CellClick;
+                    };                                                          
                     this.Controls.Add(cells[i, j]);
+                    cells[i, j].Click += CellClick;
                     cells[i, j].BringToFront();
                     cells[i, j].Visible = false;
 
@@ -74,29 +79,23 @@ namespace SudokuUwUu
                 TextAlign = ContentAlignment.MiddleCenter,
                 BorderStyle = BorderStyle.FixedSingle
             };
-            mode_button.Click += new EventHandler(mode_change_click);
+            mode_button.Click += new EventHandler(Mode_change_click);
             is_edit_mode = false;
 
             this.Controls.Add(mode_button);
             this.Controls.Add(background);
             this.Controls.Add(menu_button);
-            mode_button.Visible = false;
-            background.Visible = false;
-            menu_button.Visible = false;
+            mode_button.Visible = background.Visible = menu_button.Visible = false;
         }
 
-        private void mode_change_click(object sender, EventArgs e)
+        private void Mode_change_click(object sender, EventArgs e)
         {
             if (is_edit_mode)
-            {
                 mode_button.Text = "Mode: Final";
-                is_edit_mode = false;
-            }
             else
-            {
                 mode_button.Text = "Mode: Edit";
-                is_edit_mode = true;
-            }
+
+            is_edit_mode = !is_edit_mode;
             this.Focus();
         }
 
@@ -114,17 +113,9 @@ namespace SudokuUwUu
 
         private void MenuScreeLoad(object sender, EventArgs e)
         {
-            title_label.Enabled = true;
-            play_button.Enabled = true;
-            solver_button.Enabled = true;
-            rules_button.Enabled = true;
-            about_button.Enabled = true;
-
-            title_label.Visible = true;
-            play_button.Visible = true;
-            solver_button.Visible = true;
-            rules_button.Visible = true;
-            about_button.Visible = true;
+            this.Height = 460;
+            this.Width = 640;
+            this.DesktopLocation = new Point(this.Location.X + 120, this.Location.Y + 90);            
 
             is_play_screen = false;
             if (active_cell != null)
@@ -133,57 +124,43 @@ namespace SudokuUwUu
                 active_cell = null;
             }
 
-            mode_button.Visible = false;
-            background.Visible = false;
-            menu_button.Visible = false;
+            title_label.Enabled = title_label.Visible = true;
+            play_button.Enabled = play_button.Visible = true;
+            solver_button.Enabled = solver_button.Visible = true;
+            rules_button.Enabled = rules_button.Visible = true;
+            about_button.Enabled = about_button.Visible = true;
+            mode_button.Visible = background.Visible = menu_button.Visible = false;
 
             for (int i = 0; i < 9; ++i)
             {
                 for (int j = 0; j < 9; ++j)
-                {
                     cells[i, j].Visible = false;
-                }
-            }
-
-            this.Height = 460;
-            this.Width = 640;
-
-            this.DesktopLocation = new Point(this.Location.X + 120, this.Location.Y + 90);
+            }            
         }
 
-        private void play_button_Click(object sender, EventArgs e)
+        private void Play_button_Click(object sender, EventArgs e)
         {
-            title_label.Enabled = false;
-            play_button.Enabled = false;
-            solver_button.Enabled = false;
-            rules_button.Enabled = false;
-            about_button.Enabled = false;
-
-            title_label.Visible = false;
-            play_button.Visible = false;
-            solver_button.Visible = false;
-            rules_button.Visible = false;
-            about_button.Visible = false;
-
-            is_play_screen = true;
-            is_edit_mode = false;
-            mode_button.Text = "Mode: Final";
-
-            mode_button.Visible = true;
-            background.Visible = true;
-            menu_button.Visible = true;
-
-            for (int i = 0; i < 9; ++i)
-            {
-                for (int j = 0; j < 9; ++j)
-                {
-                    cells[i, j].Visible = true;
-                }
-            }
+            title_label.Enabled = title_label.Visible = false;
+            play_button.Enabled = play_button.Visible = false;
+            solver_button.Enabled = solver_button.Visible = false;
+            rules_button.Enabled = rules_button.Visible = false;
+            about_button.Enabled = about_button.Visible = false;
 
             this.Height = 670;
             this.Width = 750;
             this.DesktopLocation = new Point(this.Location.X - 120, this.Location.Y - 90);
+
+            is_play_screen = is_edit_mode = false;
+
+            mode_button.Text = "Mode: Final";
+
+            mode_button.Visible = background.Visible = menu_button.Visible = true;
+
+            for (int i = 0; i < 9; ++i)
+            {
+                for (int j = 0; j < 9; ++j)
+                    cells[i, j].Visible = true;
+            }
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -244,6 +221,15 @@ namespace SudokuUwUu
             }
 
             return res;
+        }
+
+        int[,] GetNewSudokuBoard()
+        {
+            int[,] board = new int[9, 9];
+
+
+
+            return board;
         }
     }
 }

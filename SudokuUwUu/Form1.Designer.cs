@@ -61,7 +61,7 @@ namespace SudokuUwUu
             this.play_button.TabIndex = 1;
             this.play_button.Text = "Play";
             this.play_button.UseVisualStyleBackColor = false;
-            this.play_button.Click += new System.EventHandler(this.play_button_Click);
+            this.play_button.Click += new System.EventHandler(this.Play_button_Click);
             // 
             // solver_button
             // 

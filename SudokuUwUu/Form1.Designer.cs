@@ -142,7 +142,9 @@ namespace SudokuUwUu
         private bool is_play_screen;
         private bool is_edit_mode;
         private bool new_game;
-        private int active_x, active_y;        
+        private int active_x, active_y;
+
+        private int[,] main_board;
     }
 }
 

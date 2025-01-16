@@ -174,11 +174,11 @@ namespace SudokuUwUu
 
         private void LoadTheBoard()
         {
-            int[,] board = GetNewSudokuBoard();
+            main_board = GetNewSudokuBoard();
 
             for (int i = 0; i < 9; ++i)
                 for (int j = 0; j < 9; ++j)
-                    cells[i, j].Text = (board[i, j] == 0 ? "" : board[i, j].ToString());
+                    cells[i, j].Text = (main_board[i, j] == 0 ? "" : main_board[i, j].ToString());
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -191,14 +191,41 @@ namespace SudokuUwUu
                     if (!is_edit_mode)
                     {
                         if (active_cell != null)
+                        {
+                            int i = active_cell.Name[5] - '0', j = active_cell.Name[7] - '0';
+                            main_board[i, j] = n - '0';
                             active_cell.Font = new Font("Sanserif", 28F, FontStyle.Regular);
-                        active_cell.Text = n.ToString();
+                            active_cell.ForeColor = Color.SteelBlue;
+
+                            if (!CheckBoard(ref main_board, i, j))
+                            {
+                                main_board[i, j] = 0;
+                                active_cell.Text = "";
+                            }
+                            else
+                            {
+                                active_cell.Text = n.ToString();
+
+                                for (int k = 0; k < 9; ++k)
+                                {
+                                    if (j != k && cells[i, k].Text.Length > 2)
+                                        MakeEditableCell(n - '0', ref cells[i, k], true);
+                                    if (i != k && cells[k, j].Text.Length > 2)
+                                        MakeEditableCell(n - '0', ref cells[k, j], true);
+                                }
+
+                                for (int y = 3 * (i / 3); y < 3 * (i / 3) + 3; ++y)
+                                    for (int x = 3 * (j / 3); x < 3 * (j / 3) + 3; ++x)
+                                        if (i != y && j != x && cells[y, x].Text.Length > 2)
+                                            MakeEditableCell(n - '0', ref cells[y, x], true);
+                            }
+                        }
                     }
                     else
                     {
                         if (active_cell != null)
                             active_cell.Font = new Font("Sanserif", 12F, FontStyle.Regular);
-                        active_cell.Text = MakeEditableCell(n - '0');
+                        MakeEditableCell(n - '0', ref active_cell);
                     }
                 }
                 else if (n == 'c' || n == 'C')
@@ -207,9 +234,9 @@ namespace SudokuUwUu
             e.SuppressKeyPress = true;
         }
 
-        private string MakeEditableCell(int pressed_num)
+        private void MakeEditableCell(int pressed_num, ref Label act_cell, bool remove = false)
         {
-            string res = active_cell.Text;
+            string res = act_cell.Text;
 
             bool[] nums = new bool[9];
 
@@ -218,7 +245,10 @@ namespace SudokuUwUu
                     if (res[i] > '0' && res[i] <= '9')
                         nums[res[i] - '0' - 1] = true;
 
-            nums[pressed_num - 1] = !nums[pressed_num - 1];
+            if (!remove)
+                nums[pressed_num - 1] = !nums[pressed_num - 1];
+            else
+                nums[pressed_num - 1] = false;
 
             res = "";
             for (int i = 0; i < 9; ++i)
@@ -234,7 +264,7 @@ namespace SudokuUwUu
                     res += "  ";
             }
 
-            return res;
+            act_cell.Text = res;
         }
 
         int[,] GetNewSudokuBoard()

@@ -15,6 +15,7 @@ namespace SudokuUwUu
 
         private void Load1()
         {
+            new_game = true;
             is_play_screen = false;
 
             cells = new Label[9, 9];
@@ -132,14 +133,24 @@ namespace SudokuUwUu
             mode_button.Visible = background.Visible = menu_button.Visible = false;
 
             for (int i = 0; i < 9; ++i)
-            {
                 for (int j = 0; j < 9; ++j)
                     cells[i, j].Visible = false;
-            }            
         }
 
         private void Play_button_Click(object sender, EventArgs e)
         {
+            if (new_game)
+            {
+                new_game = false;
+                LoadTheBoard();
+            }
+            else
+            {
+                DialogResult res = MessageBox.Show("Start new game???", "Game", MessageBoxButtons.YesNo);
+                if (res == DialogResult.Yes)
+                    LoadTheBoard();
+            }
+
             title_label.Enabled = title_label.Visible = false;
             play_button.Enabled = play_button.Visible = false;
             solver_button.Enabled = solver_button.Visible = false;
@@ -157,10 +168,17 @@ namespace SudokuUwUu
             mode_button.Visible = background.Visible = menu_button.Visible = true;
 
             for (int i = 0; i < 9; ++i)
-            {
                 for (int j = 0; j < 9; ++j)
                     cells[i, j].Visible = true;
-            }
+        }
+
+        private void LoadTheBoard()
+        {
+            int[,] board = GetNewSudokuBoard();
+
+            for (int i = 0; i < 9; ++i)
+                for (int j = 0; j < 9; ++j)
+                    cells[i, j].Text = (board[i, j] == 0 ? "" : board[i, j].ToString());
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -196,13 +214,9 @@ namespace SudokuUwUu
             bool[] nums = new bool[9];
 
             if (res.Length > 1)
-            {
                 for (int i = 0; i < res.Length; i++)
-                {
                     if (res[i] > '0' && res[i] <= '9')
                         nums[res[i] - '0' - 1] = true;
-                }
-            }
 
             nums[pressed_num - 1] = !nums[pressed_num - 1];
 
@@ -230,6 +244,24 @@ namespace SudokuUwUu
 
 
             return board;
+        }
+
+        bool CheckBoard(ref int[,] board, int i, int j)
+        {
+            for (int k = 0; k < 9; ++k)
+            {
+                if (j != k && board[i, k] == board[i, j])
+                    return false;
+                if (i != k && board[k, j] == board[i, j])
+                    return false;
+            }
+
+            for (int y = 3 * (i / 3); y < 3 * (i / 3) + 3; ++y)
+                for (int x = 3 * (j / 3); x < 3 * (j / 3) + 3; ++x)
+                    if (i != y && j != x && board[y, x] == board[i, j])
+                        return false;
+
+            return true;
         }
     }
 }

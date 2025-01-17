@@ -174,7 +174,7 @@ namespace SudokuUwUu
 
         private void LoadTheBoard()
         {
-            main_board = GetNewSudokuBoard();
+            main_board = GetRandomSudokuBoard();
 
             for (int i = 0; i < 9; ++i)
                 for (int j = 0; j < 9; ++j)
@@ -267,24 +267,39 @@ namespace SudokuUwUu
             act_cell.Text = res;
         }
 
-        int[,] GetNewSudokuBoard()
+        int[,] GetRandomSudokuBoard()
         {
             int[,] board = new int[9, 9];
+            int[] row = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
-
+            for (int i = 0; i < 9; ++i)
+            {
+                Shuffle(ref row);
+                for (int j = 0; j < 9; ++j)
+                {
+                    board[i, j] = row[j];
+                    
+                }
+            }
 
             return board;
+        }
+
+        void Shuffle(ref int[] row)
+        {
+            Random random = new Random();
+            for (int i = 0; i < 9; ++i)
+            {
+                int j = i + random.Next(0, 9 - i);
+                (row[j], row[i]) = (row[i], row[j]);
+            }
         }
 
         bool CheckBoard(ref int[,] board, int i, int j)
         {
             for (int k = 0; k < 9; ++k)
-            {
-                if (j != k && board[i, k] == board[i, j])
+                if ((i != k && board[k, j] == board[i, j]) || (j != k && board[i, k] == board[i, j]))
                     return false;
-                if (i != k && board[k, j] == board[i, j])
-                    return false;
-            }
 
             for (int y = 3 * (i / 3); y < 3 * (i / 3) + 3; ++y)
                 for (int x = 3 * (j / 3); x < 3 * (j / 3) + 3; ++x)

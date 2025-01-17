@@ -34,8 +34,8 @@
               "Title": "Form1.cs [Design]",
               "DocumentMoniker": "C:\\Users\\alber\\Desktop\\GitHub\\SudokuGame\\SudokuUwUu\\Form1.cs",
               "RelativeDocumentMoniker": "Form1.cs",
-              "ToolTip": "C:\\Users\\alber\\Desktop\\GitHub\\SudokuGame\\SudokuUwUu\\Form1.cs [Design]",
-              "RelativeToolTip": "Form1.cs [Design]",
+              "ToolTip": "C:\\Users\\alber\\Desktop\\GitHub\\SudokuGame\\SudokuUwUu\\Form1.cs [Design]*",
+              "RelativeToolTip": "Form1.cs [Design]*",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-01-14T13:02:30.073Z",
               "EditorCaption": " [Design]"
@@ -46,9 +46,9 @@
               "Title": "Form1.cs",
               "DocumentMoniker": "C:\\Users\\alber\\Desktop\\GitHub\\SudokuGame\\SudokuUwUu\\Form1.cs",
               "RelativeDocumentMoniker": "Form1.cs",
-              "ToolTip": "C:\\Users\\alber\\Desktop\\GitHub\\SudokuGame\\SudokuUwUu\\Form1.cs",
-              "RelativeToolTip": "Form1.cs",
-              "ViewState": "AgIAAAwBAAAAAAAAAAAmwBQBAAAQAAAAAAAAAA==",
+              "ToolTip": "C:\\Users\\alber\\Desktop\\GitHub\\SudokuGame\\SudokuUwUu\\Form1.cs*",
+              "RelativeToolTip": "Form1.cs*",
+              "ViewState": "AgIAABMBAAAAAAAAAAA+wBkBAAAwAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-01-14T13:02:40.614Z",
               "EditorCaption": ""
@@ -63,8 +63,7 @@
               "RelativeToolTip": "Form1.Designer.cs",
               "ViewState": "AgIAABYAAAAAAAAAAAAiwJIAAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-14T19:12:31.478Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-01-14T19:12:31.478Z"
             }
           ]
         },

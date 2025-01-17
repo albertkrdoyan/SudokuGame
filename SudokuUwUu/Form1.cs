@@ -177,8 +177,14 @@ namespace SudokuUwUu
             main_board = GetRandomSudokuBoard();
 
             for (int i = 0; i < 9; ++i)
+            {
                 for (int j = 0; j < 9; ++j)
+                {
+                    cells[i, j].BackColor = Color.White;
+                    cells[i, j].ForeColor = Color.Black;
                     cells[i, j].Text = (main_board[i, j] == 0 ? "" : main_board[i, j].ToString());
+                }
+            }                
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -270,19 +276,47 @@ namespace SudokuUwUu
         int[,] GetRandomSudokuBoard()
         {
             int[,] board = new int[9, 9];
-            int[] row = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
-            for (int i = 0; i < 9; ++i)
-            {
-                Shuffle(ref row);
-                for (int j = 0; j < 9; ++j)
-                {
-                    board[i, j] = row[j];
-                    
-                }
-            }
+            while (!GenSud(ref board, 0, 0)) ;
+
+            RemoveRandomFromSudoku(ref board, 45);
 
             return board;
+        }
+
+        void RemoveRandomFromSudoku(ref int[,] board, int count_remove)
+        {
+            Random r = new Random();
+            int x = r.Next(9), y = r.Next(9);
+
+            for (int i = 0; i < count_remove; ++i)
+            {
+                while (board[y, x] == 0)
+                {
+                    x = r.Next(9);
+                    y = r.Next(9);
+                }
+
+                board[y, x] = 0;
+            }
+        }
+
+        bool GenSud(ref int[,] board, int col, int row)
+        {
+            if (row == 9) return true;
+
+            int[] nums = { 1,2,3,4,5,6,7,8,9 };
+            Shuffle(ref nums);
+
+            foreach (int n in nums)
+            {
+                board[row, col] = n;
+                if (CheckBoard(ref board, row, col))
+                    return GenSud(ref board, (col == 8 ? 0 : col + 1), (col == 8 ? row + 1 : row));
+            }
+            board[row, col] = 0;
+
+            return false;
         }
 
         void Shuffle(ref int[] row)

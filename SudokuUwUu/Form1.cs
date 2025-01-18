@@ -23,7 +23,7 @@ namespace SudokuUwUu
             int st_x = 70, st_y = 65, size = 60;
             int st_x_fixed = st_x;
 
-            menu_button = new Button()
+            menu_button = new Label()
             {
                 Location = new Point(10, 10),
                 Size = new Size(150, 40),
@@ -31,7 +31,8 @@ namespace SudokuUwUu
                 Font = new Font("Segoe UI Black", 15F, FontStyle.Bold),
                 BackColor = SystemColors.ControlLightLight,
                 TextAlign = ContentAlignment.MiddleCenter,
-                ForeColor = play_button.ForeColor
+                ForeColor = play_button.ForeColor,
+                BorderStyle = BorderStyle.FixedSingle
             };
             menu_button.Click += MenuScreeLoad;
 
@@ -279,7 +280,7 @@ namespace SudokuUwUu
 
             while (!GenSud(ref board, 0, 0)) ;
 
-            RemoveRandomFromSudoku(ref board, 45);
+            RemoveRandomFromSudoku(ref board, 25);
 
             return board;
         }

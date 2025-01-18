@@ -136,7 +136,7 @@ namespace SudokuUwUu
         private Label[,] cells;
         private Label background;
         private Label active_cell;
-        private Button menu_button;
+        private Label menu_button;
         private Label mode_button;
 
         private bool is_play_screen;

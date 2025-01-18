@@ -138,6 +138,7 @@ namespace SudokuUwUu
         private Label active_cell;
         private Label menu_button;
         private Label mode_button;
+        private Label reset_button;
 
         private bool is_play_screen;
         private bool is_edit_mode;
@@ -145,6 +146,7 @@ namespace SudokuUwUu
         private int active_x, active_y;
 
         private int[,] main_board;
+        private bool[,] editable_positions;
     }
 }
 

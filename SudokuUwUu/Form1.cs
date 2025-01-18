@@ -25,8 +25,8 @@ namespace SudokuUwUu
 
             menu_button = new Label()
             {
-                Location = new Point(10, 10),
-                Size = new Size(150, 40),
+                Location = new Point(st_x + size / 2, 10),
+                Size = new Size(size * 2, 40),
                 Text = "<- MENU",
                 Font = new Font("Segoe UI Black", 15F, FontStyle.Bold),
                 BackColor = SystemColors.ControlLightLight,
@@ -73,21 +73,55 @@ namespace SudokuUwUu
             mode_button = new Label()
             {
                 Font = menu_button.Font,
-                Size = menu_button.Size,
+                Size = new Size(size * 3, 40),
                 BackColor = menu_button.BackColor,
                 ForeColor = menu_button.ForeColor,
-                Location = new Point(cells[0, 3].Location.X + size / 2, menu_button.Location.Y),
-                Text = "Mode: Final",
+                Location = new Point(menu_button.Location.X + menu_button.Width + size / 2, menu_button.Location.Y),
+                Text = "Mode(M): Final",
                 TextAlign = ContentAlignment.MiddleCenter,
                 BorderStyle = BorderStyle.FixedSingle
             };
             mode_button.Click += new EventHandler(Mode_change_click);
             is_edit_mode = false;
 
+            reset_button = new Label()
+            {
+                Font = menu_button.Font,
+                Size = new Size(size * 2, 40),
+                BackColor = menu_button.BackColor,
+                ForeColor = menu_button.ForeColor,
+                Location = new Point(mode_button.Location.X + mode_button.Width + size / 2, menu_button.Location.Y),
+                Text = "Reset (R)",
+                TextAlign = ContentAlignment.MiddleCenter,
+                BorderStyle = BorderStyle.FixedSingle
+            };
+            reset_button.Click += new EventHandler(ResetBoard);
+
+            this.Controls.Add(reset_button);
             this.Controls.Add(mode_button);
             this.Controls.Add(background);
             this.Controls.Add(menu_button);
-            mode_button.Visible = background.Visible = menu_button.Visible = false;
+            reset_button.Visible = mode_button.Visible = background.Visible = menu_button.Visible = false;
+        }
+
+        private void ResetBoard(object sender, EventArgs e)
+        {
+            for (int i = 0; i < 9; ++i)
+            {
+                for (int j = 0; j < 9; ++j)
+                {
+                    if (editable_positions[i, j])
+                    {
+                        main_board[i, j] = 0;
+                        cells[i, j].Text = "";
+                    }                        
+                }
+            }
+
+            if (active_cell != null)
+                active_cell.BackColor = SystemColors.ControlLightLight;
+            active_cell = null;
+            active_x = active_y = -1;
         }
 
         private void Mode_change_click(object sender, EventArgs e)
@@ -95,9 +129,9 @@ namespace SudokuUwUu
             if (!is_play_screen) return;
 
             if (is_edit_mode)
-                mode_button.Text = "Mode: Final";
+                mode_button.Text = "Mode(M): Final";
             else
-                mode_button.Text = "Mode: Edit";
+                mode_button.Text = "Mode(M): Edit";
 
             is_edit_mode = !is_edit_mode;
             this.Focus();
@@ -129,6 +163,7 @@ namespace SudokuUwUu
             {
                 active_cell.BackColor = SystemColors.ControlLightLight;
                 active_cell = null;
+                active_x = active_y = -1;
             }
 
             title_label.Enabled = title_label.Visible = true;
@@ -136,7 +171,7 @@ namespace SudokuUwUu
             solver_button.Enabled = solver_button.Visible = true;
             rules_button.Enabled = rules_button.Visible = true;
             about_button.Enabled = about_button.Visible = true;
-            mode_button.Visible = background.Visible = menu_button.Visible = false;
+            reset_button.Visible = mode_button.Visible = background.Visible = menu_button.Visible = false;
 
             for (int i = 0; i < 9; ++i)
                 for (int j = 0; j < 9; ++j)
@@ -171,9 +206,9 @@ namespace SudokuUwUu
             is_edit_mode = false;
             active_x = active_y = -1;
 
-            mode_button.Text = "Mode: Final";
+            mode_button.Text = "Mode(M): Final";
 
-            mode_button.Visible = background.Visible = menu_button.Visible = true;
+            reset_button.Visible = mode_button.Visible = background.Visible = menu_button.Visible = true;
 
             for (int i = 0; i < 9; ++i)
                 for (int j = 0; j < 9; ++j)
@@ -246,8 +281,15 @@ namespace SudokuUwUu
                 e.SuppressKeyPress = true;
                 return;
             }
+            if (e.KeyData == Keys.R)
+            {
+                ResetBoard(null, null);
+                e.SuppressKeyPress = true;
+                return;
+            }
+
             char n = e.KeyData.ToString()[e.KeyData.ToString().Length - 1];
-            if (active_cell != null)
+            if (active_cell != null && editable_positions[active_y, active_x])
             {
                 if (n > '0' && n <= '9')
                 {
@@ -334,17 +376,18 @@ namespace SudokuUwUu
         {
             int[,] board = new int[9, 9];
 
-            while (!GenSud(ref board, 0, 0)) ;
+            while (!GenSud(ref board, 0, 0));
 
-            RemoveRandomFromSudoku(ref board, 25);
+            editable_positions = RemoveRandomFromSudoku(ref board, 25);
 
             return board;
         }
 
-        void RemoveRandomFromSudoku(ref int[,] board, int count_remove)
+        bool[,] RemoveRandomFromSudoku(ref int[,] board, int count_remove)
         {
             Random r = new Random();
             int x = r.Next(9), y = r.Next(9);
+            bool[,] f_p = new bool[9, 9];
 
             for (int i = 0; i < count_remove; ++i)
             {
@@ -354,8 +397,11 @@ namespace SudokuUwUu
                     y = r.Next(9);
                 }
 
+                f_p[y, x] = true;
                 board[y, x] = 0;
             }
+
+            return f_p;
         }
 
         bool GenSud(ref int[,] board, int col, int row)
@@ -369,7 +415,10 @@ namespace SudokuUwUu
             {
                 board[row, col] = n;
                 if (CheckBoard(ref board, row, col))
-                    return GenSud(ref board, (col == 8 ? 0 : col + 1), (col == 8 ? row + 1 : row));
+                {
+                    if (GenSud(ref board, (col == 8 ? 0 : col + 1), (col == 8 ? row + 1 : row)))
+                        return true;
+                }
             }
             board[row, col] = 0;
 

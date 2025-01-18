@@ -92,6 +92,8 @@ namespace SudokuUwUu
 
         private void Mode_change_click(object sender, EventArgs e)
         {
+            if (!is_play_screen) return;
+
             if (is_edit_mode)
                 mode_button.Text = "Mode: Final";
             else
@@ -108,6 +110,9 @@ namespace SudokuUwUu
                 if (active_cell != null)
                     active_cell.BackColor = SystemColors.ControlLightLight;
                 active_cell = cell;
+
+                active_y = active_cell.Name[5] - '0';
+                active_x = active_cell.Name[7] - '0';
 
                 cell.BackColor = Color.LightBlue;
             }
@@ -162,7 +167,9 @@ namespace SudokuUwUu
             this.Width = 750;
             this.DesktopLocation = new Point(this.Location.X - 120, this.Location.Y - 90);
 
-            is_play_screen = is_edit_mode = false;
+            is_play_screen = true;
+            is_edit_mode = false;
+            active_x = active_y = -1;
 
             mode_button.Text = "Mode: Final";
 
@@ -190,6 +197,55 @@ namespace SudokuUwUu
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
+            if (e.KeyData == Keys.Down) {
+                if (active_y == 8 || active_y == -1)
+                    return;
+                active_y++;
+
+                CellClick(cells[active_y, active_x], null);
+
+                e.SuppressKeyPress = true;
+                return;
+            }
+            if (e.KeyData == Keys.Up)
+            {
+                if (active_y == 0 || active_y == -1)
+                    return;
+                active_y--;
+
+                CellClick(cells[active_y, active_x], null);
+
+                e.SuppressKeyPress = true;
+                return;
+            }
+            if (e.KeyData == Keys.Right)
+            {
+                if (active_x == 8 || active_x == -1)
+                    return;
+                active_x++;
+
+                CellClick(cells[active_y, active_x], null);
+
+                e.SuppressKeyPress = true;
+                return;
+            }
+            if (e.KeyData == Keys.Left)
+            {
+                if (active_x == 0 || active_x == -1)
+                    return;
+                active_x--;
+
+                CellClick(cells[active_y, active_x], null);
+
+                e.SuppressKeyPress = true;
+                return;
+            }
+            if (e.KeyData == Keys.M)
+            {
+                Mode_change_click(null, null);
+                e.SuppressKeyPress = true;
+                return;
+            }
             char n = e.KeyData.ToString()[e.KeyData.ToString().Length - 1];
             if (active_cell != null)
             {

@@ -139,11 +139,15 @@ namespace SudokuUwUu
         private Label menu_button;
         private Label mode_button;
         private Label reset_button;
+        private Label attempts_show_label;
 
         private bool is_play_screen;
         private bool is_edit_mode;
         private bool new_game;
         private int active_x, active_y;
+        private int attempts;
+        private int difficulty;
+        private int unsolved_cells_left;
 
         private int[,] main_board;
         private bool[,] editable_positions;

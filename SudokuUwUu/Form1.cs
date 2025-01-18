@@ -15,8 +15,9 @@ namespace SudokuUwUu
 
         private void Load1()
         {
+            difficulty = 70;
             new_game = true;
-            is_play_screen = false;
+            is_play_screen = false;            
 
             cells = new Label[9, 9];
 
@@ -25,7 +26,7 @@ namespace SudokuUwUu
 
             menu_button = new Label()
             {
-                Location = new Point(st_x + size / 2, 10),
+                Location = new Point(st_x / 2, 10),
                 Size = new Size(size * 2, 40),
                 Text = "<- MENU",
                 Font = new Font("Segoe UI Black", 15F, FontStyle.Bold),
@@ -34,7 +35,7 @@ namespace SudokuUwUu
                 ForeColor = play_button.ForeColor,
                 BorderStyle = BorderStyle.FixedSingle
             };
-            menu_button.Click += MenuScreeLoad;
+            menu_button.Click += new EventHandler(MenuScreeLoad);
 
             background = new Label()
             {
@@ -97,11 +98,24 @@ namespace SudokuUwUu
             };
             reset_button.Click += new EventHandler(ResetBoard);
 
+            attempts_show_label = new Label()
+            {
+                Font = menu_button.Font,
+                Size = new Size(size * 4, 40),
+                BackColor = menu_button.BackColor,
+                ForeColor = menu_button.ForeColor,
+                Location = new Point(reset_button.Location.X + reset_button.Width + size / 2, menu_button.Location.Y),
+                TextAlign = ContentAlignment.MiddleCenter,
+                BorderStyle = BorderStyle.FixedSingle
+            };
+
+            this.Controls.Add(attempts_show_label);
             this.Controls.Add(reset_button);
             this.Controls.Add(mode_button);
             this.Controls.Add(background);
             this.Controls.Add(menu_button);
-            reset_button.Visible = mode_button.Visible = background.Visible = menu_button.Visible = false;
+            
+            attempts_show_label.Visible = reset_button.Visible = mode_button.Visible = background.Visible = menu_button.Visible = false;
         }
 
         private void ResetBoard(object sender, EventArgs e)
@@ -117,6 +131,8 @@ namespace SudokuUwUu
                     }                        
                 }
             }
+
+            unsolved_cells_left = difficulty;
 
             if (active_cell != null)
                 active_cell.BackColor = SystemColors.ControlLightLight;
@@ -171,7 +187,7 @@ namespace SudokuUwUu
             solver_button.Enabled = solver_button.Visible = true;
             rules_button.Enabled = rules_button.Visible = true;
             about_button.Enabled = about_button.Visible = true;
-            reset_button.Visible = mode_button.Visible = background.Visible = menu_button.Visible = false;
+            attempts_show_label.Visible = reset_button.Visible = mode_button.Visible = background.Visible = menu_button.Visible = false;
 
             for (int i = 0; i < 9; ++i)
                 for (int j = 0; j < 9; ++j)
@@ -208,7 +224,7 @@ namespace SudokuUwUu
 
             mode_button.Text = "Mode(M): Final";
 
-            reset_button.Visible = mode_button.Visible = background.Visible = menu_button.Visible = true;
+            attempts_show_label.Visible = reset_button.Visible = mode_button.Visible = background.Visible = menu_button.Visible = true;
 
             for (int i = 0; i < 9; ++i)
                 for (int j = 0; j < 9; ++j)
@@ -217,12 +233,15 @@ namespace SudokuUwUu
 
         private void LoadTheBoard()
         {
+            attempts = 3;
+            attempts_show_label.Text = "Attempts left: " + attempts.ToString();
             main_board = GetRandomSudokuBoard();
 
             for (int i = 0; i < 9; ++i)
             {
                 for (int j = 0; j < 9; ++j)
                 {
+                    cells[i, j].Font = new Font("Sanserif", 28F, FontStyle.Regular);
                     cells[i, j].BackColor = Color.White;
                     cells[i, j].ForeColor = Color.Black;
                     cells[i, j].Text = (main_board[i, j] == 0 ? "" : main_board[i, j].ToString());
@@ -304,6 +323,14 @@ namespace SudokuUwUu
 
                             if (!CheckBoard(ref main_board, i, j))
                             {
+                                if (attempts-- == 0)
+                                {
+                                    MessageBox.Show("You lost...", "Game over!", MessageBoxButtons.OK);
+                                    MenuScreeLoad(null, null);
+                                    new_game = true;
+                                    return;
+                                }
+                                attempts_show_label.Text = "Attempts left: " + attempts.ToString();
                                 main_board[i, j] = 0;
                                 active_cell.Text = "";
                             }
@@ -323,6 +350,16 @@ namespace SudokuUwUu
                                     for (int x = 3 * (j / 3); x < 3 * (j / 3) + 3; ++x)
                                         if (i != y && j != x && cells[y, x].Text.Length > 2)
                                             MakeEditableCell(n - '0', ref cells[y, x], true);
+
+                                if (--unsolved_cells_left == 0)
+                                {
+                                    MessageBox.Show("You win...", "WIN!!!", MessageBoxButtons.OK);
+                                    MenuScreeLoad(null, null);
+                                    new_game = true;
+                                    return;
+                                }
+
+                                attempts_show_label.Text = "Attempts left: " + unsolved_cells_left.ToString();
                             }
                         }
                     }
@@ -334,7 +371,12 @@ namespace SudokuUwUu
                     }
                 }
                 else if (n == 'c' || n == 'C')
+                {
+                    if (main_board[active_y, active_x] != 0)
+                        unsolved_cells_left++;
                     active_cell.Text = "";
+                    main_board[active_y, active_x] = 0;
+                }                    
             }
             e.SuppressKeyPress = true;
         }
@@ -378,7 +420,8 @@ namespace SudokuUwUu
 
             while (!GenSud(ref board, 0, 0));
 
-            editable_positions = RemoveRandomFromSudoku(ref board, 25);
+            editable_positions = RemoveRandomFromSudoku(ref board, difficulty);
+            unsolved_cells_left = difficulty;
 
             return board;
         }

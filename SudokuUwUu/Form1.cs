@@ -15,7 +15,7 @@ namespace SudokuUwUu
 
         private void Load1()
         {
-            difficulty = 70;
+            difficulty = 40;
             new_game = true;
             is_play_screen = false;            
 
@@ -317,6 +317,8 @@ namespace SudokuUwUu
                         if (active_cell != null)
                         {
                             int i = active_cell.Name[5] - '0', j = active_cell.Name[7] - '0';
+                            if (main_board[i, j] == 0)
+                                unsolved_cells_left--;
                             main_board[i, j] = n - '0';
                             active_cell.Font = new Font("Sanserif", 28F, FontStyle.Regular);
                             active_cell.ForeColor = Color.SteelBlue;
@@ -332,6 +334,7 @@ namespace SudokuUwUu
                                 }
                                 attempts_show_label.Text = "Attempts left: " + attempts.ToString();
                                 main_board[i, j] = 0;
+                                unsolved_cells_left++;
                                 active_cell.Text = "";
                             }
                             else
@@ -351,23 +354,27 @@ namespace SudokuUwUu
                                         if (i != y && j != x && cells[y, x].Text.Length > 2)
                                             MakeEditableCell(n - '0', ref cells[y, x], true);
 
-                                if (--unsolved_cells_left == 0)
+                                if (unsolved_cells_left == 0)
                                 {
                                     MessageBox.Show("You win...", "WIN!!!", MessageBoxButtons.OK);
                                     MenuScreeLoad(null, null);
                                     new_game = true;
                                     return;
                                 }
-
-                                attempts_show_label.Text = "Attempts left: " + unsolved_cells_left.ToString();
                             }
+                            attempts_show_label.Text = "Attempts left: " + unsolved_cells_left.ToString();
                         }
                     }
                     else
                     {
+                        if (main_board[active_y, active_x] != 0)
+                        {
+                            unsolved_cells_left++;
+                            main_board[active_y, active_x] = 0;
+                        }                            
                         if (active_cell != null)
                             active_cell.Font = new Font("Sanserif", 12F, FontStyle.Regular);
-                        MakeEditableCell(n - '0', ref active_cell);
+                        MakeEditableCell(n - '0', ref active_cell);                        
                     }
                 }
                 else if (n == 'c' || n == 'C')

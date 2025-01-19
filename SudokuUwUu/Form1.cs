@@ -16,7 +16,7 @@ namespace SudokuUwUu
         private void Load1()
         {
             new_game = true;
-            is_edit_mode = is_play_screen = false;            
+            is_edit_mode = is_play_screen = false;
 
             int st_x = 70, st_y = 65, size = 60;
             int st_x_fixed = st_x;
@@ -67,7 +67,7 @@ namespace SudokuUwUu
                 ForeColor = play_button.ForeColor,
                 BorderStyle = BorderStyle.FixedSingle
             };
-            menu_button.Click += new EventHandler(MenuScreeLoad);            
+            menu_button.Click += new EventHandler(MenuScreeLoad);
 
             mode_button = new Label()
             {
@@ -80,7 +80,7 @@ namespace SudokuUwUu
                 TextAlign = ContentAlignment.MiddleCenter,
                 BorderStyle = BorderStyle.FixedSingle
             };
-            mode_button.Click += new EventHandler(Mode_change_click);            
+            mode_button.Click += new EventHandler(Mode_change_click);
 
             reset_button = new Label()
             {
@@ -106,24 +106,63 @@ namespace SudokuUwUu
                 BorderStyle = BorderStyle.FixedSingle
             };
 
+            solve_button = new Label()
+            {
+                Font = menu_button.Font,
+                Size = new Size(size * 3, 40),
+                BackColor = menu_button.BackColor,
+                ForeColor = menu_button.ForeColor,
+                Location = new Point(menu_button.Location.X + menu_button.Width + size / 2, menu_button.Location.Y),
+                TextAlign = ContentAlignment.MiddleCenter,
+                BorderStyle = BorderStyle.FixedSingle,
+                Text = "SOLVE (S)",
+            };
+            solve_button.Click += new EventHandler(Solve_button_Click);
+
+            this.Controls.Add(solve_button);
             this.Controls.Add(attempts_show_label);
             this.Controls.Add(reset_button);
             this.Controls.Add(mode_button);
             this.Controls.Add(background);
             this.Controls.Add(menu_button);
 
-            attempts_show_label.Visible = reset_button.Visible = mode_button.Visible = background.Visible = menu_button.Visible = false;
+            solve_button.Visible = attempts_show_label.Visible = reset_button.Visible = mode_button.Visible = background.Visible = menu_button.Visible = false;
         }
 
-        private void ResetBoard(object sender, EventArgs e)
+        private void Solve_button_Click(object sender, EventArgs e)
         {
+            if (!solve_button.Visible) return;
+            
+            for (int i = 0; i < 9; ++i)
+                for (int j = 0; j < 9; ++j)
+                    editable_positions[i, j] = (main_board[i, j] == 0 ? false : true);
+
+            GenSud(ref main_board, 0, 0);
+
             for (int i = 0; i < 9; ++i)
             {
                 for (int j = 0; j < 9; ++j)
                 {
-                    if (editable_positions[i, j])
+                    cells[i, j].Text = main_board[i, j].ToString();
+                    if (editable_positions[i, j]) cells[i, j].ForeColor = Color.Black;
+                    else cells[i, j].ForeColor = Color.Red;
+                    editable_positions[i, j] = false;
+                }
+            }                                 
+        }
+
+        private void ResetBoard(object sender, EventArgs e)
+        {
+            if (!solve_button.Visible && !mode_button.Visible) return;
+
+            for (int i = 0; i < 9; ++i)
+            {
+                for (int j = 0; j < 9; ++j)
+                {
+                    if (editable_positions[i, j] || !is_play_screen)
                     {
                         main_board[i, j] = 0;
+                        editable_positions[i, j] = true;
                         cells[i, j].Text = "";
                     }
                 }
@@ -147,7 +186,6 @@ namespace SudokuUwUu
                 mode_button.Text = "Mode(M): Edit";
 
             is_edit_mode = !is_edit_mode;
-            this.Focus();
         }
 
         private void CellClick(object sender, EventArgs e)
@@ -171,7 +209,7 @@ namespace SudokuUwUu
             this.Width = 640;
             this.DesktopLocation = new Point(this.Location.X + 120, this.Location.Y + 120);
 
-            is_play_screen = false;
+            is_edit_mode = is_play_screen = false;
             if (active_cell != null)
             {
                 active_cell.BackColor = SystemColors.ControlLightLight;
@@ -184,7 +222,7 @@ namespace SudokuUwUu
             solver_button.Enabled = solver_button.Visible = true;
             rules_button.Enabled = rules_button.Visible = true;
             about_button.Enabled = about_button.Visible = true;
-            attempts_show_label.Visible = reset_button.Visible = mode_button.Visible = background.Visible = menu_button.Visible = false;
+            solve_button.Visible = attempts_show_label.Visible = reset_button.Visible = mode_button.Visible = background.Visible = menu_button.Visible = false;
 
             for (int i = 0; i < 9; ++i)
                 for (int j = 0; j < 9; ++j)
@@ -194,15 +232,15 @@ namespace SudokuUwUu
         private void Play_button_Click(object sender, EventArgs e)
         {
             if (new_game)
-            {                
-                if (!LoadTheBoard()) return;
+            {
+                if (!LoadTheBoard(true)) return;
                 new_game = false;
             }
             else
             {
                 DialogResult res = MessageBox.Show("Start new game???", "Game", MessageBoxButtons.YesNo);
                 if (res == DialogResult.Yes)
-                    if (!LoadTheBoard()) return;
+                    if (!LoadTheBoard(true)) return;
             }
 
             title_label.Enabled = title_label.Visible = false;
@@ -222,21 +260,20 @@ namespace SudokuUwUu
             mode_button.Text = "Mode(M): Final";
 
             attempts_show_label.Visible = reset_button.Visible = mode_button.Visible = background.Visible = menu_button.Visible = true;
-
-            for (int i = 0; i < 9; ++i)
-                for (int j = 0; j < 9; ++j)
-                    cells[i, j].Visible = true;
         }
 
-        private bool LoadTheBoard()
+        private bool LoadTheBoard(bool is_game)
         {
-            DiffSelect();
+            if (is_game)
+            {
+                DiffSelect();
 
-            if (difficulty == 0) return false;
+                if (difficulty == 0) return false;
 
-            attempts = 3;
-            attempts_show_label.Text = "Attempts left: " + attempts.ToString();
-            main_board = GetRandomSudokuBoard();
+                attempts = 3;
+                attempts_show_label.Text = "Attempts left: " + attempts.ToString();
+                main_board = GetRandomSudokuBoard();
+            }
 
             for (int i = 0; i < 9; ++i)
             {
@@ -246,6 +283,8 @@ namespace SudokuUwUu
                     cells[i, j].BackColor = Color.White;
                     cells[i, j].ForeColor = Color.Black;
                     cells[i, j].Text = (main_board[i, j] == 0 ? "" : main_board[i, j].ToString());
+                    cells[i, j].Visible = true;
+                    if (!is_game) editable_positions[i, j] = true;
                 }
             }
 
@@ -379,6 +418,12 @@ namespace SudokuUwUu
                 e.SuppressKeyPress = true;
                 return;
             }
+            if (e.KeyData == Keys.S)
+            {
+                Solve_button_Click(null, null);
+                e.SuppressKeyPress = true;
+                return;
+            }
 
             char n = e.KeyData.ToString()[e.KeyData.ToString().Length - 1];
             if (active_cell != null && editable_positions[active_y, active_x])
@@ -398,41 +443,48 @@ namespace SudokuUwUu
 
                             if (!CheckBoard(ref main_board, i, j))
                             {
-                                if (attempts-- == 0)
+                                if (is_play_screen)
                                 {
-                                    MessageBox.Show("You lost...", "Game over!", MessageBoxButtons.OK);
-                                    MenuScreeLoad(null, null);
-                                    new_game = true;
-                                    return;
+                                    if (attempts-- == 0)
+                                    {
+                                        MessageBox.Show("You lost...", "Game over!", MessageBoxButtons.OK);
+                                        MenuScreeLoad(null, null);
+                                        new_game = true;
+                                        return;
+                                    }
+                                    attempts_show_label.Text = "Attempts left: " + attempts.ToString();
+                                    unsolved_cells_left++;
                                 }
-                                attempts_show_label.Text = "Attempts left: " + attempts.ToString();
+
                                 main_board[i, j] = 0;
-                                unsolved_cells_left++;
                                 active_cell.Text = "";
                             }
                             else
                             {
                                 active_cell.Text = n.ToString();
 
-                                for (int k = 0; k < 9; ++k)
+                                if (is_play_screen)
                                 {
-                                    if (j != k && cells[i, k].Text.Length > 2)
-                                        MakeEditableCell(n - '0', ref cells[i, k], true);
-                                    if (i != k && cells[k, j].Text.Length > 2)
-                                        MakeEditableCell(n - '0', ref cells[k, j], true);
-                                }
+                                    for (int k = 0; k < 9; ++k)
+                                    {
+                                        if (j != k && cells[i, k].Text.Length > 2)
+                                            MakeEditableCell(n - '0', ref cells[i, k], true);
+                                        if (i != k && cells[k, j].Text.Length > 2)
+                                            MakeEditableCell(n - '0', ref cells[k, j], true);
+                                    }
 
-                                for (int y = 3 * (i / 3); y < 3 * (i / 3) + 3; ++y)
-                                    for (int x = 3 * (j / 3); x < 3 * (j / 3) + 3; ++x)
-                                        if (i != y && j != x && cells[y, x].Text.Length > 2)
-                                            MakeEditableCell(n - '0', ref cells[y, x], true);
+                                    for (int y = 3 * (i / 3); y < 3 * (i / 3) + 3; ++y)
+                                        for (int x = 3 * (j / 3); x < 3 * (j / 3) + 3; ++x)
+                                            if (i != y && j != x && cells[y, x].Text.Length > 2)
+                                                MakeEditableCell(n - '0', ref cells[y, x], true);
 
-                                if (unsolved_cells_left == 0)
-                                {
-                                    MessageBox.Show("You win...", "WIN!!!", MessageBoxButtons.OK);
-                                    MenuScreeLoad(null, null);
-                                    new_game = true;
-                                    return;
+                                    if (unsolved_cells_left == 0)
+                                    {
+                                        MessageBox.Show("You win...", "WIN!!!", MessageBoxButtons.OK);
+                                        MenuScreeLoad(null, null);
+                                        new_game = true;
+                                        return;
+                                    }
                                 }
                             }
                         }
@@ -494,20 +546,20 @@ namespace SudokuUwUu
         int[,] GetRandomSudokuBoard()
         {
             int[,] board = new int[9, 9];
+            editable_positions = new bool[9, 9];
 
             while (!GenSud(ref board, 0, 0)) ;
 
-            editable_positions = RemoveRandomFromSudoku(ref board, difficulty);
+            RemoveRandomFromSudoku(ref board, ref editable_positions, difficulty);
             unsolved_cells_left = difficulty;
 
             return board;
         }
 
-        bool[,] RemoveRandomFromSudoku(ref int[,] board, int count_remove)
+        void RemoveRandomFromSudoku(ref int[,] board, ref bool[,] e_p, int count_remove)
         {
             Random r = new Random();
             int x = r.Next(9), y = r.Next(9);
-            bool[,] f_p = new bool[9, 9];
 
             for (int i = 0; i < count_remove; ++i)
             {
@@ -517,22 +569,26 @@ namespace SudokuUwUu
                     y = r.Next(9);
                 }
 
-                f_p[y, x] = true;
+                e_p[y, x] = true;
                 board[y, x] = 0;
             }
-
-            return f_p;
         }
 
         bool GenSud(ref int[,] board, int col, int row)
-        {
+        {            
             if (row == 9) return true;
+
+            if (editable_positions[row, col])
+            {
+                return GenSud(ref board, (col == 8 ? 0 : col + 1), (col == 8 ? row + 1 : row));
+            }
 
             int[] nums = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
             Shuffle(ref nums);
 
             foreach (int n in nums)
             {
+                //if (editable_positions[row, col]) continue;
                 board[row, col] = n;
                 if (CheckBoard(ref board, row, col))
                 {
@@ -567,6 +623,29 @@ namespace SudokuUwUu
                         return false;
 
             return true;
+        }
+
+        private void Solver_button_Click(object sender, EventArgs e)
+        {
+            title_label.Enabled = title_label.Visible = false;
+            play_button.Enabled = play_button.Visible = false;
+            solver_button.Enabled = solver_button.Visible = false;
+            rules_button.Enabled = rules_button.Visible = false;
+            about_button.Enabled = about_button.Visible = false;
+
+            this.Height = 670;
+            this.Width = 750;
+            this.DesktopLocation = new Point(this.Location.X - 120, this.Location.Y - 120);
+
+            active_x = active_y = -1;
+
+            solve_button.Visible = reset_button.Visible = background.Visible = menu_button.Visible = true;
+            new_game = true;
+
+            main_board = new int[9, 9];
+            editable_positions = new bool[9, 9];
+
+            LoadTheBoard(false);
         }
     }
 }

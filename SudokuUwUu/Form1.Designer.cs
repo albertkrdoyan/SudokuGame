@@ -75,6 +75,7 @@ namespace SudokuUwUu
             this.solver_button.TabIndex = 2;
             this.solver_button.Text = "Solver";
             this.solver_button.UseVisualStyleBackColor = false;
+            this.solver_button.Click += new System.EventHandler(this.Solver_button_Click);
             // 
             // rules_button
             // 
@@ -139,6 +140,7 @@ namespace SudokuUwUu
         private Label menu_button;
         private Label mode_button;
         private Label reset_button;
+        private Label solve_button;
         private Label attempts_show_label;
 
         private bool is_play_screen;

@@ -15,27 +15,11 @@ namespace SudokuUwUu
 
         private void Load1()
         {
-            difficulty = 40;
             new_game = true;
-            is_play_screen = false;            
-
-            cells = new Label[9, 9];
+            is_edit_mode = is_play_screen = false;            
 
             int st_x = 70, st_y = 65, size = 60;
             int st_x_fixed = st_x;
-
-            menu_button = new Label()
-            {
-                Location = new Point(st_x / 2, 10),
-                Size = new Size(size * 2, 40),
-                Text = "<- MENU",
-                Font = new Font("Segoe UI Black", 15F, FontStyle.Bold),
-                BackColor = SystemColors.ControlLightLight,
-                TextAlign = ContentAlignment.MiddleCenter,
-                ForeColor = play_button.ForeColor,
-                BorderStyle = BorderStyle.FixedSingle
-            };
-            menu_button.Click += new EventHandler(MenuScreeLoad);
 
             background = new Label()
             {
@@ -44,6 +28,7 @@ namespace SudokuUwUu
                 Location = new Point(st_x - 3, st_y - 3),
             };
 
+            cells = new Label[9, 9];
             for (int i = 0; i < 9; ++i)
             {
                 for (int j = 0; j < 9; ++j)
@@ -59,7 +44,7 @@ namespace SudokuUwUu
                         BorderStyle = BorderStyle.FixedSingle,
                         Text = "",
                         BackColor = Color.White,
-                    };                                                          
+                    };
                     this.Controls.Add(cells[i, j]);
                     cells[i, j].Click += CellClick;
                     cells[i, j].BringToFront();
@@ -70,6 +55,19 @@ namespace SudokuUwUu
                 st_x = st_x_fixed;
                 st_y += size + ((i + 1) % 3 == 0 ? 3 : 0);
             }
+
+            menu_button = new Label()
+            {
+                Location = new Point(st_x / 2, 10),
+                Size = new Size(size * 2, 40),
+                Text = "<- MENU",
+                Font = new Font("Segoe UI Black", 15F, FontStyle.Bold),
+                BackColor = SystemColors.ControlLightLight,
+                TextAlign = ContentAlignment.MiddleCenter,
+                ForeColor = play_button.ForeColor,
+                BorderStyle = BorderStyle.FixedSingle
+            };
+            menu_button.Click += new EventHandler(MenuScreeLoad);            
 
             mode_button = new Label()
             {
@@ -82,8 +80,7 @@ namespace SudokuUwUu
                 TextAlign = ContentAlignment.MiddleCenter,
                 BorderStyle = BorderStyle.FixedSingle
             };
-            mode_button.Click += new EventHandler(Mode_change_click);
-            is_edit_mode = false;
+            mode_button.Click += new EventHandler(Mode_change_click);            
 
             reset_button = new Label()
             {
@@ -101,7 +98,7 @@ namespace SudokuUwUu
             attempts_show_label = new Label()
             {
                 Font = menu_button.Font,
-                Size = new Size(size * 4, 40),
+                Size = new Size(size * 3, 40),
                 BackColor = menu_button.BackColor,
                 ForeColor = menu_button.ForeColor,
                 Location = new Point(reset_button.Location.X + reset_button.Width + size / 2, menu_button.Location.Y),
@@ -114,7 +111,7 @@ namespace SudokuUwUu
             this.Controls.Add(mode_button);
             this.Controls.Add(background);
             this.Controls.Add(menu_button);
-            
+
             attempts_show_label.Visible = reset_button.Visible = mode_button.Visible = background.Visible = menu_button.Visible = false;
         }
 
@@ -128,7 +125,7 @@ namespace SudokuUwUu
                     {
                         main_board[i, j] = 0;
                         cells[i, j].Text = "";
-                    }                        
+                    }
                 }
             }
 
@@ -172,7 +169,7 @@ namespace SudokuUwUu
         {
             this.Height = 460;
             this.Width = 640;
-            this.DesktopLocation = new Point(this.Location.X + 120, this.Location.Y + 90);            
+            this.DesktopLocation = new Point(this.Location.X + 120, this.Location.Y + 120);
 
             is_play_screen = false;
             if (active_cell != null)
@@ -197,15 +194,15 @@ namespace SudokuUwUu
         private void Play_button_Click(object sender, EventArgs e)
         {
             if (new_game)
-            {
+            {                
+                if (!LoadTheBoard()) return;
                 new_game = false;
-                LoadTheBoard();
             }
             else
             {
                 DialogResult res = MessageBox.Show("Start new game???", "Game", MessageBoxButtons.YesNo);
                 if (res == DialogResult.Yes)
-                    LoadTheBoard();
+                    if (!LoadTheBoard()) return;
             }
 
             title_label.Enabled = title_label.Visible = false;
@@ -216,7 +213,7 @@ namespace SudokuUwUu
 
             this.Height = 670;
             this.Width = 750;
-            this.DesktopLocation = new Point(this.Location.X - 120, this.Location.Y - 90);
+            this.DesktopLocation = new Point(this.Location.X - 120, this.Location.Y - 120);
 
             is_play_screen = true;
             is_edit_mode = false;
@@ -231,8 +228,12 @@ namespace SudokuUwUu
                     cells[i, j].Visible = true;
         }
 
-        private void LoadTheBoard()
+        private bool LoadTheBoard()
         {
+            DiffSelect();
+
+            if (difficulty == 0) return false;
+
             attempts = 3;
             attempts_show_label.Text = "Attempts left: " + attempts.ToString();
             main_board = GetRandomSudokuBoard();
@@ -246,12 +247,84 @@ namespace SudokuUwUu
                     cells[i, j].ForeColor = Color.Black;
                     cells[i, j].Text = (main_board[i, j] == 0 ? "" : main_board[i, j].ToString());
                 }
-            }                
+            }
+
+            return true;
+        }
+
+        private void DiffSelect()
+        {
+            difficulty = 0;
+
+            Form diff_select = new Form()
+            {
+                StartPosition = FormStartPosition.CenterScreen,
+                Size = new Size(300, 200),
+                Text = "Difficulty...",
+                BackColor = this.BackColor
+            };
+
+            Button easy_dif_button = new Button()
+            {
+                Location = new Point(diff_select.Width / 13, 10),
+                Size = new Size(4 * diff_select.Width / 5, diff_select.Height / 5),
+                Text = "Easy",
+                Name = "easy_button",
+                BackColor = Color.White,
+                Font = play_button.Font,
+                Parent = diff_select
+            };
+            easy_dif_button.Click += new EventHandler(Dif_button_click);
+            diff_select.Controls.Add(easy_dif_button);
+
+            Button medium_dif_button = new Button()
+            {
+                Location = new Point(diff_select.Width / 13, 10 + easy_dif_button.Location.Y + easy_dif_button.Height),
+                Size = new Size(4 * diff_select.Width / 5, diff_select.Height / 5),
+                Text = "Medium",
+                Name = "medium_button",
+                BackColor = Color.White,
+                Font = play_button.Font,
+                Parent = diff_select
+            };
+            medium_dif_button.Click += new EventHandler(Dif_button_click);
+            diff_select.Controls.Add(medium_dif_button);
+
+            Button hard_dif_button = new Button()
+            {
+                Location = new Point(diff_select.Width / 13, 10 + medium_dif_button.Location.Y + medium_dif_button.Height),
+                Size = new Size(4 * diff_select.Width / 5, diff_select.Height / 5),
+                Text = "Hard",
+                Name = "hard_button",
+                BackColor = Color.White,
+                Font = play_button.Font,
+                Parent = diff_select
+            };
+            hard_dif_button.Click += new EventHandler(Dif_button_click);
+            diff_select.Controls.Add(hard_dif_button);
+
+            diff_select.ShowDialog();
+        }
+
+        private void Dif_button_click(object sender, EventArgs e)
+        {
+            if (sender is Button btn)
+            {
+                if (btn.Name == "easy_button")
+                    difficulty = 30;
+                else if (btn.Name == "medium_button")
+                    difficulty = 40;
+                else if (btn.Name == "hard_button")
+                    difficulty = 50;
+
+                btn.Parent.Hide();
+            }
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyData == Keys.Down) {
+            if (e.KeyData == Keys.Down)
+            {
                 if (active_y == 8 || active_y == -1)
                     return;
                 active_y++;
@@ -362,7 +435,6 @@ namespace SudokuUwUu
                                     return;
                                 }
                             }
-                            attempts_show_label.Text = "Attempts left: " + unsolved_cells_left.ToString();
                         }
                     }
                     else
@@ -371,10 +443,10 @@ namespace SudokuUwUu
                         {
                             unsolved_cells_left++;
                             main_board[active_y, active_x] = 0;
-                        }                            
+                        }
                         if (active_cell != null)
                             active_cell.Font = new Font("Sanserif", 12F, FontStyle.Regular);
-                        MakeEditableCell(n - '0', ref active_cell);                        
+                        MakeEditableCell(n - '0', ref active_cell);
                     }
                 }
                 else if (n == 'c' || n == 'C')
@@ -383,7 +455,7 @@ namespace SudokuUwUu
                         unsolved_cells_left++;
                     active_cell.Text = "";
                     main_board[active_y, active_x] = 0;
-                }                    
+                }
             }
             e.SuppressKeyPress = true;
         }
@@ -399,10 +471,8 @@ namespace SudokuUwUu
                     if (res[i] > '0' && res[i] <= '9')
                         nums[res[i] - '0' - 1] = true;
 
-            if (!remove)
-                nums[pressed_num - 1] = !nums[pressed_num - 1];
-            else
-                nums[pressed_num - 1] = false;
+            if (!remove) nums[pressed_num - 1] = !nums[pressed_num - 1];
+            else nums[pressed_num - 1] = false;
 
             res = "";
             for (int i = 0; i < 9; ++i)
@@ -411,7 +481,7 @@ namespace SudokuUwUu
                     res += (i + 1).ToString();
                 else
                     res += "  ";
-                                
+
                 if ((i + 1) % 3 == 0)
                     res += "\n";
                 else
@@ -425,7 +495,7 @@ namespace SudokuUwUu
         {
             int[,] board = new int[9, 9];
 
-            while (!GenSud(ref board, 0, 0));
+            while (!GenSud(ref board, 0, 0)) ;
 
             editable_positions = RemoveRandomFromSudoku(ref board, difficulty);
             unsolved_cells_left = difficulty;
@@ -458,7 +528,7 @@ namespace SudokuUwUu
         {
             if (row == 9) return true;
 
-            int[] nums = { 1,2,3,4,5,6,7,8,9 };
+            int[] nums = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
             Shuffle(ref nums);
 
             foreach (int n in nums)

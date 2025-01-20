@@ -716,7 +716,7 @@ namespace SudokuUwUu
         - Play Mode: Challenge yourself by solving the puzzle manually.
           ((M): changes the mode, <Mode:Edit>: you can add multiple cases
           in one cell, <Mode:Final>: a cell can contain only one number.
-          (R): Resets the board.)
+          (R): Resets the board. (C): Clears active cell's data.)
         - Difficulty Levels: Choose from various difficulty levels to 
           match your skill, from easy to hard.
         - Auto-Solve Function: Use the solve(S) function to solve the

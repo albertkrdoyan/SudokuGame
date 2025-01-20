@@ -7,7 +7,6 @@ C:\Users\alber\Desktop\GitHub\SudokuGame\SudokuUwUu\bin\Debug\SudokuUwUu.exe
 C:\Users\alber\Desktop\GitHub\SudokuGame\SudokuUwUu\bin\Debug\SudokuUwUu.pdb
 C:\Users\alber\Desktop\GitHub\SudokuGame\SudokuUwUu\obj\Debug\SudokuUwUu.exe
 C:\Users\alber\Desktop\GitHub\SudokuGame\SudokuUwUu\obj\Debug\SudokuUwUu.pdb
-C:\Users\alber\Desktop\GitHub\SudokuGame\SudokuUwUu\obj\Debug\SudokuUwUu.Form1.resources
 C:\Users\User\Documents\SharpDevelop Projects\Paint v0\SudokuGame\SudokuUwUu\bin\Debug\SudokuUwUu.exe.config
 C:\Users\User\Documents\SharpDevelop Projects\Paint v0\SudokuGame\SudokuUwUu\bin\Debug\SudokuUwUu.exe
 C:\Users\User\Documents\SharpDevelop Projects\Paint v0\SudokuGame\SudokuUwUu\bin\Debug\SudokuUwUu.pdb
@@ -18,3 +17,4 @@ C:\Users\User\Documents\SharpDevelop Projects\Paint v0\SudokuGame\SudokuUwUu\obj
 C:\Users\User\Documents\SharpDevelop Projects\Paint v0\SudokuGame\SudokuUwUu\obj\Debug\SudokuUwUu.csproj.CoreCompileInputs.cache
 C:\Users\User\Documents\SharpDevelop Projects\Paint v0\SudokuGame\SudokuUwUu\obj\Debug\SudokuUwUu.exe
 C:\Users\User\Documents\SharpDevelop Projects\Paint v0\SudokuGame\SudokuUwUu\obj\Debug\SudokuUwUu.pdb
+C:\Users\alber\Desktop\GitHub\SudokuGame\SudokuUwUu\obj\Debug\SudokuUwUu.MainForm.resources

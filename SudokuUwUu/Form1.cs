@@ -1,14 +1,18 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
 namespace SudokuUwUu
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
-        public Form1()
+        public MainForm()
         {
             InitializeComponent();
+
+            MinimumSize = this.Size;
+            MaximumSize = new Size(750, 670);
 
             Load1();
         }
@@ -132,10 +136,10 @@ namespace SudokuUwUu
         private void Solve_button_Click(object sender, EventArgs e)
         {
             if (!solve_button.Visible) return;
-            
+
             for (int i = 0; i < 9; ++i)
                 for (int j = 0; j < 9; ++j)
-                    editable_positions[i, j] = (main_board[i, j] == 0 ? false : true);
+                    editable_positions[i, j] = (main_board[i, j] != 0);
 
             GenSud(ref main_board, 0, 0);
 
@@ -148,7 +152,7 @@ namespace SudokuUwUu
                     else cells[i, j].ForeColor = Color.Red;
                     editable_positions[i, j] = false;
                 }
-            }                                 
+            }
         }
 
         private void ResetBoard(object sender, EventArgs e)
@@ -204,9 +208,10 @@ namespace SudokuUwUu
         }
 
         private void MenuScreeLoad(object sender, EventArgs e)
-        {
+        {            
             this.Height = 460;
             this.Width = 640;
+            this.MinimumSize = this.Size;
             this.DesktopLocation = new Point(this.Location.X + 120, this.Location.Y + 120);
 
             is_edit_mode = is_play_screen = false;
@@ -270,7 +275,6 @@ namespace SudokuUwUu
 
                 if (difficulty == 0) return false;
 
-                attempts = 3;
                 attempts_show_label.Text = "Attempts left: " + attempts.ToString();
                 main_board = GetRandomSudokuBoard();
             }
@@ -299,11 +303,13 @@ namespace SudokuUwUu
             {
                 StartPosition = FormStartPosition.CenterScreen,
                 Size = new Size(300, 200),
+                MinimumSize = new Size(300, 200),
+                MaximumSize = new Size(300, 200),
                 Text = "Difficulty...",
                 BackColor = this.BackColor
             };
 
-            Button easy_dif_button = new Button()
+            Label easy_dif_button = new Label()
             {
                 Location = new Point(diff_select.Width / 13, 10),
                 Size = new Size(4 * diff_select.Width / 5, diff_select.Height / 5),
@@ -311,12 +317,14 @@ namespace SudokuUwUu
                 Name = "easy_button",
                 BackColor = Color.White,
                 Font = play_button.Font,
+                TextAlign = ContentAlignment.MiddleCenter,
+                BorderStyle = BorderStyle.FixedSingle,
                 Parent = diff_select
             };
             easy_dif_button.Click += new EventHandler(Dif_button_click);
             diff_select.Controls.Add(easy_dif_button);
 
-            Button medium_dif_button = new Button()
+            Label medium_dif_button = new Label()
             {
                 Location = new Point(diff_select.Width / 13, 10 + easy_dif_button.Location.Y + easy_dif_button.Height),
                 Size = new Size(4 * diff_select.Width / 5, diff_select.Height / 5),
@@ -324,12 +332,14 @@ namespace SudokuUwUu
                 Name = "medium_button",
                 BackColor = Color.White,
                 Font = play_button.Font,
+                TextAlign = ContentAlignment.MiddleCenter,
+                BorderStyle = BorderStyle.FixedSingle,
                 Parent = diff_select
             };
             medium_dif_button.Click += new EventHandler(Dif_button_click);
             diff_select.Controls.Add(medium_dif_button);
 
-            Button hard_dif_button = new Button()
+            Label hard_dif_button = new Label()
             {
                 Location = new Point(diff_select.Width / 13, 10 + medium_dif_button.Location.Y + medium_dif_button.Height),
                 Size = new Size(4 * diff_select.Width / 5, diff_select.Height / 5),
@@ -337,7 +347,9 @@ namespace SudokuUwUu
                 Name = "hard_button",
                 BackColor = Color.White,
                 Font = play_button.Font,
-                Parent = diff_select
+                Parent = diff_select,
+                TextAlign = ContentAlignment.MiddleCenter,
+                BorderStyle = BorderStyle.FixedSingle,
             };
             hard_dif_button.Click += new EventHandler(Dif_button_click);
             diff_select.Controls.Add(hard_dif_button);
@@ -347,20 +359,29 @@ namespace SudokuUwUu
 
         private void Dif_button_click(object sender, EventArgs e)
         {
-            if (sender is Button btn)
+            if (sender is Label btn)
             {
                 if (btn.Name == "easy_button")
+                {
                     difficulty = 30;
+                    attempts = 3;
+                }
                 else if (btn.Name == "medium_button")
+                {
                     difficulty = 40;
+                    attempts = 5;
+                }
                 else if (btn.Name == "hard_button")
+                {
                     difficulty = 50;
+                    attempts = 7;
+                }
 
                 btn.Parent.Hide();
             }
         }
 
-        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyData == Keys.Down)
             {
@@ -575,7 +596,7 @@ namespace SudokuUwUu
         }
 
         bool GenSud(ref int[,] board, int col, int row)
-        {            
+        {
             if (row == 9) return true;
 
             if (editable_positions[row, col])
@@ -646,6 +667,115 @@ namespace SudokuUwUu
             editable_positions = new bool[9, 9];
 
             LoadTheBoard(false);
+        }
+
+        private void Rules_button_Click(object sender, EventArgs e)
+        {
+            Form rules = new Form()
+            {
+                Size = new Size(700, 600),
+                MaximumSize = new Size(700, 600),
+                MinimumSize = new Size(700, 600),
+                StartPosition = FormStartPosition.CenterScreen,
+                BackColor = this.BackColor,
+                Text = "Rules",
+                ShowIcon = false,
+            };
+
+            RichTextBox info = new RichTextBox()
+            {
+                Dock = DockStyle.Fill,
+                ReadOnly = true,
+                BackColor = this.BackColor,
+                Font = new Font("Arial", 15F, FontStyle.Regular),
+                Text = @"
+        What is Sudoku?
+
+        Sudoku is a classic puzzle game that involves filling a 9x9 
+        grid with numbers so that each row, column, and 3x3 subgrid
+        (also known as a 'box') contains all the numbers from 1 to 9. 
+        The puzzle starts with some numbers already filled in, and 
+        the objective is to complete the grid following the game's rules.
+
+        Basic Rules of Sudoku
+
+        1. Objective: Fill the grid with numbers from 1 to 9.
+        2. Unique Numbers: Each number must appear only once in each:
+            - Row
+            - Column
+            - 3x3 Subgrid
+        3. Starting Clues: The game begins with a partially filled grid,
+           which serves as clues for solving the puzzle.
+        4. No Guessing: Sudoku can be solved through logical deduction 
+           without the need for guessing.
+        5. In each game, there will be a few attempt points.
+           After losing all, you lose the game.
+
+        Game Features
+
+        - Play Mode: Challenge yourself by solving the puzzle manually.
+          ((M): changes the mode, <Mode:Edit>: you can add multiple cases
+          in one cell, <Mode:Final>: a cell can contain only one number.
+          (R): Resets the board.)
+        - Difficulty Levels: Choose from various difficulty levels to 
+          match your skill, from easy to hard.
+        - Auto-Solve Function: Use the solve(S) function to solve the
+          board (only in the solver Mode).
+
+        Enjoy the challenge and sharpen your logic skills with Sudoku!
+                    "
+            };
+            rules.Controls.Add(info);
+
+            info.Enter += (_sender, _e) => { rules.ActiveControl = null; };
+
+            rules.ShowDialog();
+        }
+
+        private void About_button_Click(object sender, EventArgs e)
+        {
+            Form about = new Form()
+            {
+                Size = new Size(650, 250),
+                MaximumSize = new Size(650, 250),
+                MinimumSize = new Size(650, 250),
+                StartPosition = FormStartPosition.CenterScreen,
+                BackColor = this.BackColor,
+                Text = "About",
+                ShowIcon = false,
+            };
+
+            RichTextBox info = new RichTextBox()
+            {
+                Dock = DockStyle.Fill,
+                ReadOnly = true,
+                BackColor = this.BackColor,
+                Font = new Font("Arial", 15F, FontStyle.Regular),
+                DetectUrls = true,
+                Text = @"
+
+                    Creator: Albert Krdoyan
+                    Facebook: https://www.facebook.com/albert.krdoyan/
+                    Github: https://github.com/albertkrdoyan
+
+                    Game version: v1.0
+                    "
+            };
+            about.Controls.Add(info);
+            info.LinkClicked += Info_LinkClicked;
+
+            info.Enter += (_sender, _e) => { about.ActiveControl = null; };
+
+            about.ShowDialog();
+        }
+
+        private void Info_LinkClicked(object sender, LinkClickedEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = e.LinkText,
+                UseShellExecute = true
+            });
         }
     }
 }

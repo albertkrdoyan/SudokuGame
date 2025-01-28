@@ -10,12 +10,14 @@ section .bss
     ext_key: resb 8
 
 section .data
-    string:   db '%s, %s, %s, %s, %s', 10, 0 
+    string:   db 'DATA<%s, %s, %s, %s, %s, %d, %d>', 10, 0 
     jstr1:       db 'STR1', 0
     jstr2:       db 'STR2', 0
     jstr3:       db 'STR3', 0
     jstr4:       db 'STR4', 0
     jstr5:       db 'STR5', 0
+    num1L        dw  505
+    num2L        dw  108
 
     startmsg: db '<----START OF PROGRAM----->', 10, 0
     endmsg:   db '<---END OF PROGRAM--->', 10, 'Press any key to exit...', 0
@@ -29,15 +31,24 @@ start:
     call    printf
     ;=================[PROGRAM START]=======================
 
-    mov     rcx, string
+    mov     rcx, string     
     mov     rdx, jstr1
     mov     r8,  jstr2
     mov     r9,  jstr3
+
     lea     rax, qword [jstr4]
     mov     qword [rsp + 32], rax
+
     lea     rax, qword [jstr5]
     mov     qword [rsp + 40], rax
-    call    printf
+
+    movzx   rax, word [num1L]
+    mov     qword [rsp + 48], rax
+
+    movzx   rax, word [num2L]
+    mov     qword [rsp + 56], rax
+    
+    call    printf              ;call
     
     ;=================[PROGRAM END]=======================
 _exit: ;EXIT

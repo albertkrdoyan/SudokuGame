@@ -1,0 +1,46 @@
+[BITS 64]
+
+global start
+
+extern printf        ;from msvcrt
+extern scanf         ;from msvcrt
+extern ExitProcess   ;from kernel32
+
+section .bss
+    name:   resb 128
+    ext_key:resb 8
+
+section .data
+    prompt: db 'Enter your name: ',0
+    frmt:   db '%s',0
+    greet:  db 'Hello, %s!',0ah,0
+    endmsg: db '<---END OF PROGRAM--->',10, 'Press any key to exit...', 0
+    ext_frm:db '%s',0
+
+section .text
+start:
+    sub     rsp, 40
+
+    mov     rcx,prompt
+    call    printf
+
+    mov     rdx,name
+    mov     rcx,frmt
+    call    scanf
+
+    mov     rdx,name
+    mov     rcx,greet
+    call    printf
+
+    ;exit part
+    mov     rcx,endmsg
+    call    printf
+
+    mov     rdx,ext_key
+    mov     rcx,ext_frm
+    call    scanf
+
+    xor     ecx,ecx
+    call    ExitProcess
+
+;nasm -f win64 hello.asm -o hello.obj && GoLink /console hello.obj kernel32.dll msvcrt.dll && hello

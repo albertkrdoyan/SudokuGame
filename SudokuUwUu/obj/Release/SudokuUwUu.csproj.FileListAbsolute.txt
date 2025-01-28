@@ -1,0 +1,10 @@
+C:\Users\alber\Desktop\GitHub\SudokuGame\SudokuUwUu\bin\Release\SudokuUwUu.exe.config
+C:\Users\alber\Desktop\GitHub\SudokuGame\SudokuUwUu\bin\Release\SudokuUwUu.exe
+C:\Users\alber\Desktop\GitHub\SudokuGame\SudokuUwUu\bin\Release\SudokuUwUu.pdb
+C:\Users\alber\Desktop\GitHub\SudokuGame\SudokuUwUu\obj\Release\SudokuUwUu.csproj.AssemblyReference.cache
+C:\Users\alber\Desktop\GitHub\SudokuGame\SudokuUwUu\obj\Release\SudokuUwUu.MainForm.resources
+C:\Users\alber\Desktop\GitHub\SudokuGame\SudokuUwUu\obj\Release\SudokuUwUu.Properties.Resources.resources
+C:\Users\alber\Desktop\GitHub\SudokuGame\SudokuUwUu\obj\Release\SudokuUwUu.csproj.GenerateResource.cache
+C:\Users\alber\Desktop\GitHub\SudokuGame\SudokuUwUu\obj\Release\SudokuUwUu.csproj.CoreCompileInputs.cache
+C:\Users\alber\Desktop\GitHub\SudokuGame\SudokuUwUu\obj\Release\SudokuUwUu.exe
+C:\Users\alber\Desktop\GitHub\SudokuGame\SudokuUwUu\obj\Release\SudokuUwUu.pdb
